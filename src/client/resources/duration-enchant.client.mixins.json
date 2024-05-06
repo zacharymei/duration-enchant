@@ -1,11 +1,15 @@
 {
-	"required": true,
-	"package": "mods.zacharymei.mixin.client",
-	"compatibilityLevel": "JAVA_17",
-	"client": [
-		"ExampleClientMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "required": true,
+  "package": "mods.zacharymei.de.mixin.client",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "ExampleClientMixin",
+    "ItemStackMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+
+  ]
 }

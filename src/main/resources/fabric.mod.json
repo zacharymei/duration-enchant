@@ -16,13 +16,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"mods.zacharymei.DurationalEnchant"
+			"mods.zacharymei.de.DurationalEnchant"
 		],
 		"client": [
-			"mods.zacharymei.DurationalEnchantClient"
+			"mods.zacharymei.de.DurationalEnchantClient"
 		],
 		"fabric-datagen": [
-			"mods.zacharymei.DurationalEnchantDataGenerator"
+			"mods.zacharymei.de.DurationalEnchantDataGenerator"
 		]
 	},
 	"mixins": [

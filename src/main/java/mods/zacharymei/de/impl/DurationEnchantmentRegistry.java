@@ -1,4 +1,4 @@
-package mods.zacharymei.impl;
+package mods.zacharymei.de.impl;
 
 import com.google.common.collect.Maps;
 import net.minecraft.entity.player.PlayerEntity;

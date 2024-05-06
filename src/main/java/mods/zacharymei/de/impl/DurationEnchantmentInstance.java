@@ -1,4 +1,4 @@
-package mods.zacharymei.impl;
+package mods.zacharymei.de.impl;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;

@@ -1,4 +1,4 @@
-package mods.zacharymei.mixin.client;
+package mods.zacharymei.de.mixin.client;
 
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,4 +1,4 @@
-package mods.zacharymei.impl;
+package mods.zacharymei.de.impl;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Map;
@@ -25,11 +26,17 @@ public class DurationEnchant {
 
     public static void create(PlayerEntity player, ItemStack stack, Builder builder){
 
+
         DurationEnchantmentInstance instance = appendDurationEnchantment(stack, builder.created_player(player).created_time(player.getWorld().getTime()), player.getServer());
         if(instance == null) return;
         DurationEnchantmentRegistry ter = DurationEnchantmentRegistry.getState(player.getServer());
         DurationEnchantmentRegistry.Identifier key = ter.register(player, stack, instance);
         writeNBT(stack, key);
+
+        player.sendMessage(Text.literal(
+                "You get "+ instance.getEnchantment().getName(instance.getLevel())+
+                "for " + instance.getDuration()/20 + " seconds.."));
+
     }
 
     private static DurationEnchantmentInstance appendDurationEnchantment(ItemStack stack, Builder builder, MinecraftServer server){
@@ -100,12 +107,11 @@ public class DurationEnchant {
     }
 
 
-
-
-
     public static Builder Builder(Enchantment enchantment){
         return new Builder(enchantment);
     }
+
+
 
 
     public static class Builder{

@@ -1,4 +1,4 @@
-package mods.zacharymei.event;
+package mods.zacharymei.de.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;

@@ -1,6 +1,6 @@
-package mods.zacharymei.impl;
+package mods.zacharymei.de.impl;
 
-import mods.zacharymei.event.ItemStackEvents;
+import mods.zacharymei.de.event.ItemStackEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -22,7 +22,7 @@ public class DurationEnchantmentUpdater implements ServerTickEvents.EndTick, Ite
 
     @Override
     public void afterInventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if(!world.isClient()){
+        if(!world.isClient() && world.getServer() != null){
             NbtList de_list = stack.getOrCreateNbt().getList(DurationEnchant.KEY_DURATION_ENCHANTMENTS, NbtElement.COMPOUND_TYPE);
             for(NbtElement e: de_list){
                 UUID instance_id  = ((NbtCompound) e).getUuid(DurationEnchant.KEY_INSTANCE_ID);
@@ -33,8 +33,5 @@ public class DurationEnchantmentUpdater implements ServerTickEvents.EndTick, Ite
     }
 
 
-    public static class DEItemInventoryTickCallback {
-
-    }
 
 }
