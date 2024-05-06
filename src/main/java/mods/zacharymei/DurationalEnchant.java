@@ -1,5 +1,7 @@
 package mods.zacharymei;
 
+import mods.zacharymei.event.ItemStackEvents;
+import mods.zacharymei.impl.DurationEnchantmentUpdater;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -18,5 +20,8 @@ public class DurationalEnchant implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
+
+		ItemStackEvents.END_INVENTORY_TICK.register(new DurationEnchantmentUpdater());
+
 	}
 }
