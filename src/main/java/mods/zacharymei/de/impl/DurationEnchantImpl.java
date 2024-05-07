@@ -11,6 +11,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -33,17 +34,18 @@ public class DurationEnchantImpl {
         writeNBT(stack, key);
 
         player.sendMessage(
-                Text.literal("You get ")
-                        .append(instance.getEnchantment().getName(instance.getLevel()))
-                        .append(Text.literal("for " + instance.getDuration()/20 + " seconds..")));
+                Text.literal("You get " + instance.getDuration()/20 + " seconds ")
+                        .append(instance.getEnchantment().getName(instance.getLevel())));
 
     }
 
+    @Nullable
     private static DurationEnchantmentInstance appendDurationEnchantment(ItemStack stack, Builder builder, MinecraftServer server){
 
-        UUID exist_id;
-        if((exist_id = hasDurationEnchantment(stack.getOrCreateNbt(), builder.getEnchantment())) != null){
-            DurationEnchantmentRegistry.getState(server).earlyTimeout(stack, exist_id);
+        DurationEnchantmentInstance exist_instance;
+        if((exist_instance = hasDurationEnchantment(stack.getOrCreateNbt(), builder.getEnchantment())) != null){
+            if(exist_instance.getLevel() >= builder.getLevel()) return null;
+            DurationEnchantmentRegistry.getState(server).forceTimeout(stack, exist_instance.getInstance_id());
         }
 
 
@@ -76,6 +78,7 @@ public class DurationEnchantImpl {
         stack.getOrCreateNbt().put(KEY_DURATION_ENCHANTMENTS, list);
     }
 
+    @Nullable
     static DurationEnchantmentRegistry.Identifier fromNBT(ItemStack stack, NbtCompound nbt){
 
         Identifier en_id = Identifier.tryParse(nbt.getString(KEY_ENCHANTMENT));
@@ -96,23 +99,27 @@ public class DurationEnchantImpl {
         NbtList list = new NbtList();
 
         for(NbtElement e: de_list){
-            if(((NbtCompound) e).getUuid(KEY_INSTANCE_ID).equals(instance_id)) list.add(e);
+            if(!((NbtCompound) e).getUuid(KEY_INSTANCE_ID).equals(instance_id)) list.add(e);
         }
 
         if(!list.isEmpty()) stack.setSubNbt(KEY_DURATION_ENCHANTMENTS, list);
         else stack.removeSubNbt(KEY_DURATION_ENCHANTMENTS);
     }
 
-    static UUID hasDurationEnchantment(NbtCompound stack_nbt, Enchantment enchantment){
+    @Nullable
+    static DurationEnchantmentInstance hasDurationEnchantment(NbtCompound stack_nbt, Enchantment enchantment){
         NbtList exist_DEs = stack_nbt.getList(KEY_DURATION_ENCHANTMENTS, NbtElement.COMPOUND_TYPE);
         for(NbtElement de : exist_DEs){
             Identifier en = Identifier.tryParse(((NbtCompound) de).getString(KEY_ENCHANTMENT));
-            if(en != null && en.equals(EnchantmentHelper.getEnchantmentId(enchantment))) return ((NbtCompound) de).getUuid(KEY_INSTANCE_ID);
+            if(en != null && en.equals(EnchantmentHelper.getEnchantmentId(enchantment))){
+                UUID instance_id = ((NbtCompound) de).getUuid(KEY_INSTANCE_ID);
+                if(DurationEnchantmentRegistry.getConcurrentInstance(instance_id) != null) return DurationEnchantmentRegistry.getConcurrentInstance(instance_id);
+            }
         }
         return null;
     }
 
-    static void timeoutDurationEnchantment(ItemStack stack, DurationEnchantmentInstance de_instance){
+    static void timeoutItemInfo(ItemStack stack, DurationEnchantmentInstance de_instance){
 
         if(de_instance == null) return;
 

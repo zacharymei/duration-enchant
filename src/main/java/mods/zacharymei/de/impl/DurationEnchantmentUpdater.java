@@ -16,8 +16,7 @@ public class DurationEnchantmentUpdater implements ServerTickEvents.EndTick, Ite
 
     @Override
     public void onEndTick(MinecraftServer server) {
-        DurationEnchantmentRegistry ter = DurationEnchantmentRegistry.getState(server);
-        ter.update(server.getOverworld());
+        DurationEnchantmentRegistry.getState(server).isTimeout(server.getOverworld().getTime());
     }
 
     @Override

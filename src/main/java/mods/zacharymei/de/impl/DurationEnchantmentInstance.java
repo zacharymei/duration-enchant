@@ -91,6 +91,11 @@ public class DurationEnchantmentInstance {
     }
 
 
+    boolean hasReachTime(Long world_time){
+        return ((this.created_time + this.duration) <= world_time);
+    }
+
+
     private void updateTimeout(){
         this.timeout --;
     }

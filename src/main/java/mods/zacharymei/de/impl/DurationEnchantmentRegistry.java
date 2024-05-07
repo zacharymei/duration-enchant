@@ -27,43 +27,41 @@ public class DurationEnchantmentRegistry extends PersistentState {
 
 
     public void isTimeout(ItemStack stack, UUID instance_id){
-        if(CONCURRENT_DURATION_ENCHANTMENTS.get(instance_id) != null) return;
-        timeout(stack, instance_id);
+        if(CONCURRENT_DURATION_ENCHANTMENTS.containsKey(instance_id)) return;
+        DurationEnchantImpl.timeoutItemInfo(stack, TIMEOUT_DURATION_ENCHANTMENTS.get(instance_id));
     }
 
-    void timeout(ItemStack stack, UUID instance_id){
-        DurationEnchantImpl.timeoutDurationEnchantment(stack, TIMEOUT_DURATION_ENCHANTMENTS.get(instance_id));
-        TIMEOUT_DURATION_ENCHANTMENTS.remove(instance_id);
-    }
-
-    void earlyTimeout(ItemStack stack, UUID instance_id){
-        DurationEnchantImpl.timeoutDurationEnchantment(stack, CONCURRENT_DURATION_ENCHANTMENTS.get(instance_id));
-        CONCURRENT_DURATION_ENCHANTMENTS.remove(instance_id);
-    }
-
-    public void update(World world){
+    public void isTimeout(Long world_time){
         for(DurationEnchantmentInstance instance: CONCURRENT_DURATION_ENCHANTMENTS.values()){
-            instance.update(()->{
-                CONCURRENT_DURATION_ENCHANTMENTS.remove(instance.getInstance_id());
-                TIMEOUT_DURATION_ENCHANTMENTS.put(instance.getInstance_id(), instance);
-
-            });
-
+            if(instance.hasReachTime(world_time)){
+                timeout(instance);
+            }
         }
     }
+
+    void timeout(DurationEnchantmentInstance instance){
+        TIMEOUT_DURATION_ENCHANTMENTS.put(instance.getInstance_id(), instance);
+        CONCURRENT_DURATION_ENCHANTMENTS.remove(instance.getInstance_id());
+        instance.setTimeout(0);
+    }
+
+    void forceTimeout(ItemStack stack, UUID instance_id){
+        DurationEnchantmentInstance instance = CONCURRENT_DURATION_ENCHANTMENTS.get(instance_id);
+        DurationEnchantImpl.timeoutItemInfo(stack, instance);
+        if(instance != null){
+            timeout(instance);
+        }
+
+    }
+
+
 
     Identifier register(PlayerEntity player, ItemStack stack, DurationEnchantmentInstance de_instance){
 
         Identifier key = generateKey(player, stack, de_instance);
         CONCURRENT_DURATION_ENCHANTMENTS.put(key.getInstance_id(), de_instance);
-
         DENetworkHandler.sendUpdate((ServerPlayerEntity) player, de_instance);
-
         return key;
-    }
-
-    static void removeConcurrentInstance(UUID instance_id){
-        CONCURRENT_DURATION_ENCHANTMENTS.remove(instance_id);
     }
 
     @Nullable
@@ -76,18 +74,6 @@ public class DurationEnchantmentRegistry extends PersistentState {
     public static DurationEnchantmentInstance getConcurrentInstance(UUID instance_id){
         return CONCURRENT_DURATION_ENCHANTMENTS.get(instance_id);
     }
-
-    public static List<DurationEnchantmentInstance> getItemDurationEnchantmentInstances(ItemStack stack){
-        List<DurationEnchantmentInstance> list = new ArrayList<>();
-        NbtList de_list = stack.getOrCreateNbt().getList(DurationEnchantImpl.KEY_DURATION_ENCHANTMENTS, NbtElement.COMPOUND_TYPE);
-        for(NbtElement e: de_list){
-            DurationEnchantmentInstance instance = getInstance(((NbtCompound) e).getUuid(DurationEnchantImpl.KEY_INSTANCE_ID));
-            if(instance != null) list.add(instance);
-        }
-        return list;
-    }
-
-
 
 
     private static Identifier generateKey(PlayerEntity player, ItemStack stack, DurationEnchantmentInstance de_instance){
@@ -151,9 +137,6 @@ public class DurationEnchantmentRegistry extends PersistentState {
         state.markDirty();
         return state;
     }
-
-
-
 
 
     public static class Identifier{
