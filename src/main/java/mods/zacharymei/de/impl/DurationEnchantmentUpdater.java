@@ -26,7 +26,7 @@ public class DurationEnchantmentUpdater implements ServerTickEvents.EndTick, Ite
             for(NbtElement e: de_list){
                 UUID instance_id  = ((NbtCompound) e).getUuid(DurationEnchantImpl.KEY_INSTANCE_ID);
                 DurationEnchantmentRegistry ter = DurationEnchantmentRegistry.getState(world.getServer());
-                ter.isTimeout((ItemStack) (Object) stack, instance_id);
+                ter.isTimeout(stack, instance_id);
             }
         }
     }

@@ -129,7 +129,7 @@ public class DurationEnchantmentRegistry extends PersistentState {
         return state;
     }
 
-    private static Type<DurationEnchantmentRegistry> type = new Type<>(DurationEnchantmentRegistry::new, DurationEnchantmentRegistry::createFromNbt, null);
+    private static final Type<DurationEnchantmentRegistry> type = new Type<>(DurationEnchantmentRegistry::new, DurationEnchantmentRegistry::createFromNbt, null);
 
     public static DurationEnchantmentRegistry getState(MinecraftServer server) {
         PersistentStateManager persistentStateManager = Objects.requireNonNull(server.getWorld(World.OVERWORLD)).getPersistentStateManager();

@@ -29,7 +29,7 @@ public class DurationEnchantImpl {
 
         DurationEnchantmentInstance instance = appendDurationEnchantment(stack, builder.created_player(player).created_time(player.getWorld().getTime()), player.getServer());
         if(instance == null) return;
-        DurationEnchantmentRegistry ter = DurationEnchantmentRegistry.getState(player.getServer());
+        DurationEnchantmentRegistry ter = DurationEnchantmentRegistry.getState(Objects.requireNonNull(player.getServer()));
         DurationEnchantmentRegistry.Identifier key = ter.register(player, stack, instance);
         writeNBT(stack, key);
 
