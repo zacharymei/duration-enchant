@@ -23,8 +23,10 @@ public class DurationEnchantmentHelper {
     }
 
     public static boolean hasDurationEnchantment(ItemStack stack, Enchantment enchantment){
-        return DurationEnchant.hasDurationEnchantment(stack.getOrCreateNbt(), enchantment) != null;
+        return DurationEnchantImpl.hasDurationEnchantment(stack.getOrCreateNbt(), enchantment) != null;
     }
+
+
 
 
 

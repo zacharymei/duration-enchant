@@ -7,25 +7,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
-public class DurationEnchant {
+public class DurationEnchantImpl {
 
     public static final String KEY_DURATION_ENCHANTMENTS = "de.duration_enchant";
     public static final String KEY_PLAYER_CREATED = "player_created";
     public static final String KEY_TIME_CREATED = "time_created";
     public static final String KEY_ENCHANTMENT = "enchantment";
+    public static final String KEY_LEVEL = "level";
     public static final String KEY_INSTANCE_ID = "instance_id";
 
 
     public static void create(PlayerEntity player, ItemStack stack, Builder builder){
-
 
         DurationEnchantmentInstance instance = appendDurationEnchantment(stack, builder.created_player(player).created_time(player.getWorld().getTime()), player.getServer());
         if(instance == null) return;
@@ -33,9 +32,10 @@ public class DurationEnchant {
         DurationEnchantmentRegistry.Identifier key = ter.register(player, stack, instance);
         writeNBT(stack, key);
 
-        player.sendMessage(Text.literal(
-                "You get "+ instance.getEnchantment().getName(instance.getLevel())+
-                "for " + instance.getDuration()/20 + " seconds.."));
+        player.sendMessage(
+                Text.literal("You get ")
+                        .append(instance.getEnchantment().getName(instance.getLevel()))
+                        .append(Text.literal("for " + instance.getDuration()/20 + " seconds..")));
 
     }
 
@@ -69,10 +69,26 @@ public class DurationEnchant {
         nbt.putUuid(KEY_PLAYER_CREATED, entry.getPlayer_created());
         nbt.putLong(KEY_TIME_CREATED, entry.getTime_created());
         nbt.putString(KEY_ENCHANTMENT, entry.getEnchantment().toString());
+        nbt.putShort(KEY_LEVEL, entry.getLevel());
         nbt.putUuid(KEY_INSTANCE_ID, entry.getInstance_id());
         NbtList list = stack.getOrCreateNbt().getList(KEY_DURATION_ENCHANTMENTS, NbtElement.COMPOUND_TYPE);
         list.add(nbt);
         stack.getOrCreateNbt().put(KEY_DURATION_ENCHANTMENTS, list);
+    }
+
+    static DurationEnchantmentRegistry.Identifier fromNBT(ItemStack stack, NbtCompound nbt){
+
+        Identifier en_id = Identifier.tryParse(nbt.getString(KEY_ENCHANTMENT));
+        if(en_id == null) return null;
+
+        return new DurationEnchantmentRegistry.Identifier(
+                nbt.getUuid(KEY_PLAYER_CREATED),
+                Registries.ITEM.getId(stack.getItem()),
+                nbt.getLong(KEY_TIME_CREATED),
+                Identifier.tryParse(nbt.getString(KEY_ENCHANTMENT)),
+                nbt.getShort(KEY_LEVEL),
+                nbt.getUuid(KEY_INSTANCE_ID)
+        );
     }
 
     private static void removeNBT(ItemStack stack, UUID instance_id){
@@ -80,7 +96,7 @@ public class DurationEnchant {
         NbtList list = new NbtList();
 
         for(NbtElement e: de_list){
-            if(((NbtCompound) e).getUuid(KEY_INSTANCE_ID) != instance_id) list.add(e);
+            if(((NbtCompound) e).getUuid(KEY_INSTANCE_ID).equals(instance_id)) list.add(e);
         }
 
         if(!list.isEmpty()) stack.setSubNbt(KEY_DURATION_ENCHANTMENTS, list);
@@ -104,6 +120,15 @@ public class DurationEnchant {
         DurationEnchantmentHelper.removeExistEnchantment(stack, enchantment);
         if(de_instance.getExist_level() != 0) stack.addEnchantment(de_instance.getEnchantment(), de_instance.getExist_level());
         removeNBT(stack, de_instance.getInstance_id());
+    }
+
+    public static List<DurationEnchantmentRegistry.Identifier> getItemDurationEnchantmentInfo(ItemStack stack){
+        List<DurationEnchantmentRegistry.Identifier> list = new ArrayList<>();
+        NbtList nbt_list = stack.getOrCreateNbt().getList(KEY_DURATION_ENCHANTMENTS, NbtElement.COMPOUND_TYPE);
+        for(NbtElement e: nbt_list){
+            list.add(fromNBT(stack, (NbtCompound) e));
+        }
+        return list;
     }
 
 

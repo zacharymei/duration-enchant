@@ -23,9 +23,9 @@ public class DurationEnchantmentUpdater implements ServerTickEvents.EndTick, Ite
     @Override
     public void afterInventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if(!world.isClient() && world.getServer() != null){
-            NbtList de_list = stack.getOrCreateNbt().getList(DurationEnchant.KEY_DURATION_ENCHANTMENTS, NbtElement.COMPOUND_TYPE);
+            NbtList de_list = stack.getOrCreateNbt().getList(DurationEnchantImpl.KEY_DURATION_ENCHANTMENTS, NbtElement.COMPOUND_TYPE);
             for(NbtElement e: de_list){
-                UUID instance_id  = ((NbtCompound) e).getUuid(DurationEnchant.KEY_INSTANCE_ID);
+                UUID instance_id  = ((NbtCompound) e).getUuid(DurationEnchantImpl.KEY_INSTANCE_ID);
                 DurationEnchantmentRegistry ter = DurationEnchantmentRegistry.getState(world.getServer());
                 ter.isTimeout((ItemStack) (Object) stack, instance_id);
             }

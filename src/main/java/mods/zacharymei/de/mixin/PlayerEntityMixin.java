@@ -1,9 +1,7 @@
 package mods.zacharymei.de.mixin;
 
 import mods.zacharymei.de.api.DurationalEnchant;
-import mods.zacharymei.de.impl.DurationEnchant;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;

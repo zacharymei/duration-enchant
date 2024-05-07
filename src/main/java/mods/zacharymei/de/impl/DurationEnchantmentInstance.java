@@ -41,7 +41,7 @@ public class DurationEnchantmentInstance {
         this.created_time = created_time;
     }
 
-    DurationEnchantmentInstance(DurationEnchant.Builder builder){
+    DurationEnchantmentInstance(DurationEnchantImpl.Builder builder){
         this.enchantment_ID = EnchantmentHelper.getEnchantmentId(builder.getEnchantment());
         this.level = builder.getLevel();
         this.exist_level = builder.getExist_level();
@@ -51,7 +51,7 @@ public class DurationEnchantmentInstance {
         this.instance_id = UUID.randomUUID();
     }
 
-    NbtCompound createNBT(){
+    public NbtCompound createNBT(){
         NbtCompound nbt = new NbtCompound();
         nbt.putUuid(KEY_INSTANCE_ID, this.instance_id);
         nbt.putString(KEY_ENCHANTMENT_ID, enchantment_ID.toString());
@@ -67,7 +67,7 @@ public class DurationEnchantmentInstance {
 
 
     @Nullable
-    static DurationEnchantmentInstance fromNBT(NbtCompound nbt){
+    public static DurationEnchantmentInstance fromNBT(NbtCompound nbt){
 
         UUID instance_id = nbt.getUuid(KEY_INSTANCE_ID);
 
@@ -143,7 +143,9 @@ public class DurationEnchantmentInstance {
         return created_time;
     }
 
-
+    public void setTimeout(int timeout){
+        this.timeout = timeout;
+    }
 
 
 

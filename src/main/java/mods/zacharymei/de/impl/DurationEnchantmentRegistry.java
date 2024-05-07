@@ -1,6 +1,7 @@
 package mods.zacharymei.de.impl;
 
 import com.google.common.collect.Maps;
+import mods.zacharymei.de.networking.DENetworkHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -8,6 +9,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
@@ -30,12 +32,12 @@ public class DurationEnchantmentRegistry extends PersistentState {
     }
 
     void timeout(ItemStack stack, UUID instance_id){
-        DurationEnchant.timeoutDurationEnchantment(stack, TIMEOUT_DURATION_ENCHANTMENTS.get(instance_id));
+        DurationEnchantImpl.timeoutDurationEnchantment(stack, TIMEOUT_DURATION_ENCHANTMENTS.get(instance_id));
         TIMEOUT_DURATION_ENCHANTMENTS.remove(instance_id);
     }
 
     void earlyTimeout(ItemStack stack, UUID instance_id){
-        DurationEnchant.timeoutDurationEnchantment(stack, CONCURRENT_DURATION_ENCHANTMENTS.get(instance_id));
+        DurationEnchantImpl.timeoutDurationEnchantment(stack, CONCURRENT_DURATION_ENCHANTMENTS.get(instance_id));
         CONCURRENT_DURATION_ENCHANTMENTS.remove(instance_id);
     }
 
@@ -55,6 +57,8 @@ public class DurationEnchantmentRegistry extends PersistentState {
         Identifier key = generateKey(player, stack, de_instance);
         CONCURRENT_DURATION_ENCHANTMENTS.put(key.getInstance_id(), de_instance);
 
+        DENetworkHandler.sendUpdate((ServerPlayerEntity) player, de_instance);
+
         return key;
     }
 
@@ -69,11 +73,15 @@ public class DurationEnchantmentRegistry extends PersistentState {
         return instance;
     }
 
+    public static DurationEnchantmentInstance getConcurrentInstance(UUID instance_id){
+        return CONCURRENT_DURATION_ENCHANTMENTS.get(instance_id);
+    }
+
     public static List<DurationEnchantmentInstance> getItemDurationEnchantmentInstances(ItemStack stack){
         List<DurationEnchantmentInstance> list = new ArrayList<>();
-        NbtList de_list = stack.getOrCreateNbt().getList(DurationEnchant.KEY_DURATION_ENCHANTMENTS, NbtElement.COMPOUND_TYPE);
+        NbtList de_list = stack.getOrCreateNbt().getList(DurationEnchantImpl.KEY_DURATION_ENCHANTMENTS, NbtElement.COMPOUND_TYPE);
         for(NbtElement e: de_list){
-            DurationEnchantmentInstance instance = getInstance(((NbtCompound) e).getUuid(DurationEnchant.KEY_INSTANCE_ID));
+            DurationEnchantmentInstance instance = getInstance(((NbtCompound) e).getUuid(DurationEnchantImpl.KEY_INSTANCE_ID));
             if(instance != null) list.add(instance);
         }
         return list;
@@ -88,6 +96,7 @@ public class DurationEnchantmentRegistry extends PersistentState {
                 Registries.ITEM.getId(stack.getItem()),
                 player.getWorld().getTime(),
                 Registries.ENCHANTMENT.getId(de_instance.getEnchantment()),
+                (short) de_instance.getLevel(),
                 de_instance.getInstance_id()
         );
     }
@@ -107,7 +116,7 @@ public class DurationEnchantmentRegistry extends PersistentState {
         de_nbt.put(KEY_CONCURRENT_LIST, list);
         de_nbt.put(KEY_TIMEOUT_LIST, timeout_list);
 
-        nbt.put(DurationEnchant.KEY_DURATION_ENCHANTMENTS, de_nbt);
+        nbt.put(DurationEnchantImpl.KEY_DURATION_ENCHANTMENTS, de_nbt);
 
         return nbt;
     }
@@ -116,8 +125,8 @@ public class DurationEnchantmentRegistry extends PersistentState {
 
         DurationEnchantmentRegistry state = new DurationEnchantmentRegistry();
 
-        NbtList list = nbt.getCompound(DurationEnchant.KEY_DURATION_ENCHANTMENTS).getList(KEY_CONCURRENT_LIST, NbtElement.COMPOUND_TYPE);
-        NbtList timeout_list = nbt.getCompound(DurationEnchant.KEY_DURATION_ENCHANTMENTS).getList(KEY_TIMEOUT_LIST, NbtElement.COMPOUND_TYPE);
+        NbtList list = nbt.getCompound(DurationEnchantImpl.KEY_DURATION_ENCHANTMENTS).getList(KEY_CONCURRENT_LIST, NbtElement.COMPOUND_TYPE);
+        NbtList timeout_list = nbt.getCompound(DurationEnchantImpl.KEY_DURATION_ENCHANTMENTS).getList(KEY_TIMEOUT_LIST, NbtElement.COMPOUND_TYPE);
         if(CONCURRENT_DURATION_ENCHANTMENTS.isEmpty()){
             for(NbtElement instance_nbt: list){
                 DurationEnchantmentInstance instance = DurationEnchantmentInstance.fromNBT((NbtCompound) instance_nbt);
@@ -138,7 +147,7 @@ public class DurationEnchantmentRegistry extends PersistentState {
 
     public static DurationEnchantmentRegistry getState(MinecraftServer server) {
         PersistentStateManager persistentStateManager = Objects.requireNonNull(server.getWorld(World.OVERWORLD)).getPersistentStateManager();
-        DurationEnchantmentRegistry state = persistentStateManager.getOrCreate(type, DurationEnchant.KEY_DURATION_ENCHANTMENTS);
+        DurationEnchantmentRegistry state = persistentStateManager.getOrCreate(type, DurationEnchantImpl.KEY_DURATION_ENCHANTMENTS);
         state.markDirty();
         return state;
     }
@@ -147,19 +156,21 @@ public class DurationEnchantmentRegistry extends PersistentState {
 
 
 
-    static class Identifier{
+    public static class Identifier{
 
         private final UUID player_created;
         private final net.minecraft.util.Identifier stack;
         private final Long time_created;
         private final net.minecraft.util.Identifier enchantment;
+        private final short level;
         private final UUID instance_id;
 
-        private Identifier(UUID player, net.minecraft.util.Identifier stack, Long time_created, net.minecraft.util.Identifier enchantment, UUID instance_id){
+        Identifier(UUID player, net.minecraft.util.Identifier stack, Long time_created, net.minecraft.util.Identifier enchantment, short level, UUID instance_id){
             this.player_created = player;
             this.stack = stack;
             this.time_created = time_created;
             this.enchantment = enchantment;
+            this.level = level;
             this.instance_id = instance_id;
         }
 
@@ -179,6 +190,8 @@ public class DurationEnchantmentRegistry extends PersistentState {
         public net.minecraft.util.Identifier getEnchantment() {
             return enchantment;
         }
+
+        public short getLevel() { return level; }
 
         public UUID getInstance_id() {
             return instance_id;

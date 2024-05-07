@@ -1,5 +1,6 @@
 package mods.zacharymei.de.impl;
 
+import mods.zacharymei.de.api.DurationalEnchant;
 import mods.zacharymei.de.event.ItemStackClientEvents;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,12 +21,17 @@ public class RenderDETooltip implements ItemStackClientEvents.AppendEnchantmentT
 
     @Override
     public void append(List<Text> list, @Nullable PlayerEntity player, ItemStack stack, TooltipContext context) {
-        List<DurationEnchantmentInstance> de_instanceList = DurationEnchantmentRegistry.getItemDurationEnchantmentInstances(stack);
 
-        de_instanceList.forEach(de_instance->{
-            for(Text t:list){
-                if(t.contains(de_instance.getEnchantment().getName(de_instance.getLevel()))) drawEnchantmentText(t, de_instance);
+        List<DurationEnchantmentRegistry.Identifier> de_info = DurationalEnchant.getItemDurationEnchantmentInfo(stack);
+
+        de_info.forEach(info->{
+            DurationEnchantmentInstance de_instance = DurationEnchantmentReflector.getInstance(info.getInstance_id());
+            if(de_instance != null){
+                for(Text t:list){
+                    if(t.contains(de_instance.getEnchantment().getName(de_instance.getLevel()))) drawEnchantmentText(t, de_instance);
+                }
             }
+
         });
     }
 
