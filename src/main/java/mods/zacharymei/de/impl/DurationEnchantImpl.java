@@ -8,8 +8,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,8 +38,11 @@ public class DurationEnchantImpl {
         writeNBT(stack, key);
 
         player.sendMessage(
-                Text.literal("You get " + instance.getDuration()/20 + " seconds ")
-                        .append(instance.getEnchantment().getName(instance.getLevel())));
+                Text.literal("You get").append(ScreenTexts.SPACE)
+                        .append((Text.literal(String.valueOf(instance.getDuration()/20))).formatted(Formatting.GREEN))
+                        .append(ScreenTexts.SPACE).append("seconds")
+                        .append(ScreenTexts.SPACE)
+                        .append(instance.getEnchantment().getName(instance.getLevel()).copy().formatted(Formatting.GOLD)));
 
     }
 

@@ -22,8 +22,16 @@ public class DurationEnchantmentRegistry extends PersistentState {
     public static final String KEY_CONCURRENT_LIST = "de.concurrent";
     public static final String KEY_TIMEOUT_LIST = "de.timeout";
 
+    private static final int maxTimeoutMapSize = 30;
+
     protected static Map<UUID, DurationEnchantmentInstance> CONCURRENT_DURATION_ENCHANTMENTS = Maps.newConcurrentMap();
-    protected static Map<UUID, DurationEnchantmentInstance> TIMEOUT_DURATION_ENCHANTMENTS = Maps.newHashMap();
+    protected static LinkedHashMap<UUID, DurationEnchantmentInstance> TIMEOUT_DURATION_ENCHANTMENTS = new LinkedHashMap<>(){
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<UUID, DurationEnchantmentInstance> eldest){
+            return size() > maxTimeoutMapSize;
+        }
+
+    };
 
 
     public void isTimeout(ItemStack stack, UUID instance_id){
@@ -112,17 +120,10 @@ public class DurationEnchantmentRegistry extends PersistentState {
         DurationEnchantmentRegistry state = new DurationEnchantmentRegistry();
 
         NbtList list = nbt.getCompound(DurationEnchantImpl.KEY_DURATION_ENCHANTMENTS).getList(KEY_CONCURRENT_LIST, NbtElement.COMPOUND_TYPE);
-        NbtList timeout_list = nbt.getCompound(DurationEnchantImpl.KEY_DURATION_ENCHANTMENTS).getList(KEY_TIMEOUT_LIST, NbtElement.COMPOUND_TYPE);
         if(CONCURRENT_DURATION_ENCHANTMENTS.isEmpty()){
             for(NbtElement instance_nbt: list){
                 DurationEnchantmentInstance instance = DurationEnchantmentInstance.fromNBT((NbtCompound) instance_nbt);
                 if(instance != null) CONCURRENT_DURATION_ENCHANTMENTS.put(instance.getInstance_id(), instance);
-            }
-        }
-        if(TIMEOUT_DURATION_ENCHANTMENTS.isEmpty()){
-            for(NbtElement instance_nbt: timeout_list){
-                DurationEnchantmentInstance instance = DurationEnchantmentInstance.fromNBT((NbtCompound) instance_nbt);
-                if(instance != null) TIMEOUT_DURATION_ENCHANTMENTS.put(instance.getInstance_id(), instance);
             }
         }
 

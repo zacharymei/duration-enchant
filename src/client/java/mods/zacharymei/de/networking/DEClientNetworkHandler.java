@@ -17,8 +17,6 @@ import java.util.UUID;
 
 public class DEClientNetworkHandler {
 
-    private static final Identifier DE_UPDATE_PACKET_ID = new Identifier("de", "instance_update");
-
     public static void requireUpdate(UUID instance_id){
         ClientPlayNetworking.send(DENetworkHandler.DE_INSTANCE_UPDATE_PACKET_ID, PacketByteBufs.create().writeUuid(instance_id));
     }
