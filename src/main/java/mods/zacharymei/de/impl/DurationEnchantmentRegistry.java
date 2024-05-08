@@ -79,6 +79,7 @@ public class DurationEnchantmentRegistry extends PersistentState {
         return instance;
     }
 
+    @Nullable
     public static DurationEnchantmentInstance getConcurrentInstance(UUID instance_id){
         return CONCURRENT_DURATION_ENCHANTMENTS.get(instance_id);
     }
