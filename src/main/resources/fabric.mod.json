@@ -16,7 +16,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"mods.zacharymei.de.DurationalEnchant"
+			"mods.zacharymei.de.DurationalEnchant",
+			"mods.zacharymei.de.command.DECommands"
 		],
 		"client": [
 			"mods.zacharymei.de.DurationalEnchantClient"

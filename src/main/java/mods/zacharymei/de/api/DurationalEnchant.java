@@ -11,7 +11,7 @@ import java.util.List;
 public class DurationalEnchant {
 
     public static void create(PlayerEntity player, ItemStack stack, DurationEnchantImpl.Builder builder){
-        if(player.getWorld().isClient() || player.getServer() == null) return;
+        if(player == null || player.getWorld().isClient() ||  player.getServer() == null || stack.isEmpty()) return;
         DurationEnchantImpl.create(player, stack, builder);
     }
 
