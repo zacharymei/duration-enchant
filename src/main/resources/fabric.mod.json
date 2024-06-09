@@ -2,8 +2,8 @@
 	"schemaVersion": 1,
 	"id": "duration-enchant",
 	"version": "${version}",
-	"name": "Durational Enchant",
-	"description": "Library Mod by zacharymei to provide Durational Enchantments to Minecraft. ",
+	"name": "Duration Enchant",
+	"description": "Library Mod by zacharymei for providing Durational Enchantments to Minecraft. ",
 	"authors": [
 		"zacharymei"
 	],
@@ -16,14 +16,11 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"mods.zacharymei.de.DurationalEnchant",
-			"mods.zacharymei.de.command.DECommands"
+			"mods.zacharymei.de.DurationEnchant",
+			"mods.zacharymei.de.command.DECommand"
 		],
 		"client": [
-			"mods.zacharymei.de.DurationalEnchantClient"
-		],
-		"fabric-datagen": [
-			"mods.zacharymei.de.DurationalEnchantDataGenerator"
+
 		]
 	},
 	"mixins": [
@@ -36,8 +33,7 @@
 	"depends": {
 		"fabricloader": ">=0.15.11",
 		"minecraft": "~1.20.4",
-		"java": ">=17",
-		"fabric-api": "*"
+		"java": ">=17"
 	},
 	"suggests": {
 		"another-mod": "*"

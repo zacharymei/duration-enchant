@@ -1,6 +1,6 @@
 package mods.zacharymei.de.mixin;
 
-import mods.zacharymei.de.event.ItemStackEvents;
+import mods.zacharymei.de.event.ItemStackEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -14,11 +14,7 @@ public abstract class ItemStackMixin {
 
     @Inject(method = "inventoryTick", at = @At("TAIL"))
     public void inventoryTick(World world, Entity entity, int slot, boolean selected, CallbackInfo info){
-
-        ItemStackEvents.END_INVENTORY_TICK.invoker().afterInventoryTick((ItemStack) (Object) this, world, entity, slot, selected);
-
-
-
+        ItemStackEvent.END_INVENTORY_TICK.invoker().endInventoryTick((ItemStack) (Object) this, world, entity, slot, selected);
     }
 
 }
