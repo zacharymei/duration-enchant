@@ -12,7 +12,7 @@
 		"sources": "https://github.com/zacharymei/duration-enchant"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/duration-enchant/icon.png",
+	"icon": "assets/duration-enchant/DurationEnchant.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

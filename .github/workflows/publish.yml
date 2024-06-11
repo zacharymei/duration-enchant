@@ -1,0 +1,32 @@
+name: publish-all
+on: workflow_dispatch
+
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        # Use these Java versions
+        java: [
+          21,    # Current Java LTS
+        ]
+    runs-on: ubuntu-22.04
+    # ...
+    permissions:
+      contents: write
+    steps:
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          # Only include this section if you wish to publish
+          # your assets on Modrinth.
+          modrinth-id: AANobbMI
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          # Only include this section if you wish to publish
+          # your assets on CurseForge.
+          curseforge-id: 1034808
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          # Only include this section if you wish to publish
+          # your assets on GitHub.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
