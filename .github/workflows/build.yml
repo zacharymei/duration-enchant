@@ -35,3 +35,5 @@ jobs:
         with:
           name: Artifacts
           path: build/libs/
+      - name: mc-publish
+        uses: Kir-Antipov/mc-publish@v3.3.0
