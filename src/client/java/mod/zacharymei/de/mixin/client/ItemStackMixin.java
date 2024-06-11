@@ -1,7 +1,7 @@
-package mods.zacharymei.de.mixin.client;
+package mod.zacharymei.de.mixin.client;
 
-import mods.zacharymei.de.impl.DEData;
-import mods.zacharymei.de.DETooltip;
+import mod.zacharymei.de.impl.DEData;
+import mod.zacharymei.de.DETooltip;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;

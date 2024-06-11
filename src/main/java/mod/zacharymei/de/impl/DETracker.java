@@ -1,6 +1,6 @@
-package mods.zacharymei.de.impl;
+package mod.zacharymei.de.impl;
 
-import mods.zacharymei.de.event.ItemStackEvent;
+import mod.zacharymei.de.event.ItemStackEvent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;

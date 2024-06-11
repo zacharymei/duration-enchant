@@ -1,8 +1,9 @@
-package mods.zacharymei.de.impl;
+package mod.zacharymei.de.impl;
 
-import mods.zacharymei.de.DurationEnchant;
+import mod.zacharymei.de.DurationEnchant;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -37,7 +38,8 @@ public class DEHandler {
     }
 
     public static void timeout(ItemStack stack, Identifier id){
-        int exist_level = DEData.getExistLevel(stack, id);
+        NbtCompound nbt = DEData.getNBT(stack, id);
+        int exist_level = DEData.getExistLevel(nbt);
 
         if(exist_level > 0){
             DEData.removeDENBT(stack, id);

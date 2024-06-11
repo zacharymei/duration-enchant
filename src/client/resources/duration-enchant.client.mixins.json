@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "mods.zacharymei.de.mixin.client",
+  "package": "mod.zacharymei.de.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
     "ItemStackMixin"

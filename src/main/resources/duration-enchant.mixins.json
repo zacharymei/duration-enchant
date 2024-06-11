@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "mods.zacharymei.de.mixin",
+	"package": "mod.zacharymei.de.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"ItemStackMixin"

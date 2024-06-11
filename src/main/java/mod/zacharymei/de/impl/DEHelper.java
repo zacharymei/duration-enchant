@@ -1,4 +1,4 @@
-package mods.zacharymei.de.impl;
+package mod.zacharymei.de.impl;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;

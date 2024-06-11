@@ -1,6 +1,6 @@
-package mods.zacharymei.de.mixin;
+package mod.zacharymei.de.mixin;
 
-import mods.zacharymei.de.event.ItemStackEvent;
+import mod.zacharymei.de.event.ItemStackEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;

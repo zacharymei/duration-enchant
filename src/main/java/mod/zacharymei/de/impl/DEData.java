@@ -1,4 +1,4 @@
-package mods.zacharymei.de.impl;
+package mod.zacharymei.de.impl;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
@@ -71,19 +71,12 @@ public class DEData {
     }
 
     public static boolean isDurationEnchant(NbtCompound nbt){
-        return nbt.contains(KEY_CREATED_TIME);
+        return nbt.contains(KEY_DURATION) && nbt.contains(KEY_CREATED_TIME);
     }
 
 
-    public static int getExistLevel(ItemStack stack, Identifier id){
-        NbtList list = stack.getOrCreateNbt().getList(ENCHANTMENTS_KEY, NbtElement.COMPOUND_TYPE);
-        for(int i=0;i<list.size();++i){
-            NbtCompound content = (NbtCompound) list.get(i);
-            if(id.equals(EnchantmentHelper.getIdFromNbt(content))){
-                return content.getInt(KEY_EXIST_LEVEL);
-            }
-        }
-        return 0;
+    public static int getExistLevel(NbtCompound nbt){
+        return nbt.getInt(KEY_EXIST_LEVEL);
     }
 
     public static long getTimeout(NbtCompound nbt){
@@ -94,6 +87,17 @@ public class DEData {
 
     public static boolean shouldShowTime(NbtCompound nbt){
         return !nbt.contains(KEY_SHOW_TIME) || nbt.getBoolean(KEY_SHOW_TIME);
+    }
+
+    public static NbtCompound getNBT(ItemStack stack, Identifier id){
+        NbtList list = stack.getOrCreateNbt().getList(ENCHANTMENTS_KEY, NbtElement.COMPOUND_TYPE);
+        for (NbtElement nbtElement : list) {
+            NbtCompound content = (NbtCompound) nbtElement;
+            if (id.equals(EnchantmentHelper.getIdFromNbt(content))) {
+                return content;
+            }
+        }
+        return new NbtCompound();
     }
 
 

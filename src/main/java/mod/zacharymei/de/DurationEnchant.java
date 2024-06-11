@@ -1,7 +1,7 @@
-package mods.zacharymei.de;
+package mod.zacharymei.de;
 
-import mods.zacharymei.de.event.ItemStackEvent;
-import mods.zacharymei.de.impl.DETracker;
+import mod.zacharymei.de.event.ItemStackEvent;
+import mod.zacharymei.de.impl.DETracker;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;

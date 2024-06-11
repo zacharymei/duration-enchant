@@ -1,4 +1,4 @@
-package mods.zacharymei.de;
+package mod.zacharymei.de;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
