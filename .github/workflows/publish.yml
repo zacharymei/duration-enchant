@@ -1,26 +1,46 @@
 name: publish-all
 on: workflow_dispatch
 
-
+env:                                              #Environment variables that can later be referenced using ${{ env.MINECRAFT_VERSION }}. These are useful for repeating information and allow for quick changes for new mod updates
+  MINECRAFT_VERSION: 1.19.2                        
+  JAVA_VERSION: 17  
+  
 jobs:
   build:
-    strategy:
-      matrix:
-        # Use these Java versions
-        java: [
-          21,    # Current Java LTS
-        ]
-    runs-on: ubuntu-22.04
+    
+    runs-on: ubuntu-latest
     # ...
     permissions:
       contents: write
     steps:
-      - uses: Kir-Antipov/mc-publish@v3.3.0
+      - name: Check Environment Variables
+        run: env
+
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "temurin"
+          java-version: 17
+
+      - name: Make Gradle Wrapper Executable
+        if: ${{ runner.os != 'Windows' }}
+        run: chmod +x ./gradlew
+
+      - name: Build
+        run: ./gradlew clean build
+      
+      - name: Publish
+        uses: Kir-Antipov/mc-publish@v3.3.0
         with:
           # Only include this section if you wish to publish
           # your assets on Modrinth.
-          modrinth-id: AANobbMI
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          # modrinth-id: AANobbMI
+          # modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           # Only include this section if you wish to publish
           # your assets on CurseForge.
@@ -29,4 +49,9 @@ jobs:
 
           # Only include this section if you wish to publish
           # your assets on GitHub.
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # github-token: ${{ secrets.GITHUB_TOKEN }}
+
+          loaders: fabric
+
+          game-versions: "${{env.MINECRAFT_VERSION}}"
+          java: "${{env.JAVA_VERSION}}"
